@@ -2744,7 +2744,7 @@ bool DeclResultIdMapper::createStageVars(
     // or vertex shader output variables.
     if ((spvContext.isPS() && sigPoint->IsInput()) ||
         (spvContext.isVS() && sigPoint->IsOutput()))
-      decorateInterpolationMode(decl, type, varInstr);
+      decorateInterpolationMode(decl, type, varInstr, semanticKind);
 
     if (asInput) {
       *value = spvBuilder.createLoad(evalType, varInstr, loc);
@@ -3291,9 +3291,9 @@ DeclResultIdMapper::invertWIfRequested(SpirvInstruction *position,
   return position;
 }
 
-void DeclResultIdMapper::decorateInterpolationMode(const NamedDecl *decl,
-                                                   QualType type,
-                                                   SpirvVariable *varInstr) {
+void DeclResultIdMapper::decorateInterpolationMode(
+    const NamedDecl *decl, QualType type, SpirvVariable *varInstr,
+    hlsl::Semantic::Kind semanticKind) {
   if (varInstr->getStorageClass() != spv::StorageClass::Input &&
       varInstr->getStorageClass() != spv::StorageClass::Output) {
     return;
@@ -3318,9 +3318,11 @@ void DeclResultIdMapper::decorateInterpolationMode(const NamedDecl *decl,
     // Attributes can be used together. So cannot use else if.
     if (decl->getAttr<HLSLCentroidAttr>())
       spvBuilder.decorateCentroid(varInstr, loc);
-    if (decl->getAttr<HLSLNoInterpolationAttr>())
+    if (decl->getAttr<HLSLNoInterpolationAttr>()) // NoInterpolation
       spvBuilder.decorateFlat(varInstr, loc);
-    if (decl->getAttr<HLSLNoPerspectiveAttr>())
+    if (decl->getAttr<HLSLNoPerspectiveAttr>()
+        // noperpective already hanled by BaryCoordNoPerspKHR builtin
+        && semanticKind != hlsl::Semantic::Kind::Barycentrics)
       spvBuilder.decorateNoPerspective(varInstr, loc);
     if (decl->getAttr<HLSLSampleAttr>()) {
       spvBuilder.decorateSample(varInstr, loc);

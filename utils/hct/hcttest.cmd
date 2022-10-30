@@ -34,8 +34,8 @@ set CUSTOM_BIN_SET=
 set USE_AGILITY_SDK=
 
 rem Begin SPIRV change
-set TEST_SPIRV=1
-set TEST_SPIRV_ONLY=1
+set TEST_SPIRV=0
+set TEST_SPIRV_ONLY=0
 rem End SPIRV change
 
 set HCT_DIR=%~dp0
