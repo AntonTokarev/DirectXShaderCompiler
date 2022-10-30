@@ -121,12 +121,13 @@ endif()
 # HLSL Change Ends
 
 # SPIRV change starts
-option(ENABLE_SPIRV_CODEGEN "Enables SPIR-V code generation." ON)
-option(SPIRV_BUILD_TESTS "Build targets for the SPIR-V unit tests." ON)
+option(ENABLE_SPIRV_CODEGEN "Enables SPIR-V code generation." OFF)
+option(SPIRV_BUILD_TESTS "Build targets for the SPIR-V unit tests." OFF)
 
 # Enable SPIR-V CodeGen for Linux by default.
-set(ENABLE_SPIRV_CODEGEN ON)
-set(SPIRV_BUILD_TESTS ON)
+if(NOT WIN32)
+  set(ENABLE_SPIRV_CODEGEN ON)
+endif()
 
 if (${SPIRV_BUILD_TESTS})
   enable_testing()
